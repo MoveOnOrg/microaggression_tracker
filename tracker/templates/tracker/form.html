@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <form method="POST">
+      <ul>
+    {% for q in questions %}
+        <li>
+          <label name="{{q.name}}">{{q.name}}</label>
+            <div class="question">
+            {% for choice in q.choices %}
+              <div class="choice">
+                <input type="{% if q.checkboxes %}checkbox{% else %}radio{% endif %}" name="{{q.name}}" value="{{choice}}" /> <span>{{choice}}</span> 
+              </div>
+            {% endfor %}
+          {% if q.other_textfield %}
+              <div class="choiceother">
+             {% if not q.checkboxes %}
+              <input type="radio" name="{{q.name}}" value="other" /> <span>Other</span> 
+             {% else %}
+               <label name="{{q.name}}_other">Other</label>
+             {% endif %}
+             <input class="other" type="text" name="{{q.name}}_other" />
+             </div>
+          {% endif %}
+          </div>
+        </li>
+    {% endfor %}
+      </ul>
+      <p>
+        If you want to include a/the problematic quote (or describe it) to be shared within the organization
+        type it in below.
+        <input type="text" name="words" style="width: 100%"/>
+      </p>
+      <input type="submit" value="Submit" />
+    </form>
+  </body>
+</html>
