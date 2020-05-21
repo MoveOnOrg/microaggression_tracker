@@ -20,4 +20,5 @@ from tracker import views
 
 urlpatterns = [
     url(r'^$', views.form),
+    url(r'^report/(?P<yearmonth>\d+)$', views.monthreport),
 ]

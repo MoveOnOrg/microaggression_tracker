@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1></h1>
+    {% if notready %}
+    <p>Sorry, that month report isn't available (yet?)</p>
+    {% endif %}
+
+    {% if last_month %}
+    <p><a href="/report/{{last_month}}">Last Month's report</a></p>
+    {% endif %}
+
+    {% if results %}
+      <p>{{count}} microaggressions reported
+      </p>
+      <ul>
+      {% for name, data in results %}
+        <li><b>{{name}}</b>
+          {% if data.minimum and data.minimum > count %}
+          <p>With fewer than 3 reports, to preserve anonymity we don't report this category</p>
+          {% else %}
+
+          <div>
+            <ul>
+              {% for val, count in data.values.items %}
+              <li><span class="value">{{val}}:</span> <span class="count">{{count}}</span></li>
+              {% endfor %}
+              {% if data.other %}
+              <li><b class="other">Other:</b>
+                <ul>
+                  {% for val, count in data.other.items %}
+                  <li><span class="othervalue">{{val}}:</span> <span class="othercount">{{count}}</span></li>
+                  {% endfor %}
+                </ul>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+          {% endif %}
+        </li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+      {% if words %}
+        <h2>Hurtful words</h2>
+        <ul>
+          {% for w in words %}
+          <li>{{w}}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+  </body>
+</html>

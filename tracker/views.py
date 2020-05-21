@@ -18,7 +18,14 @@ def month_prefix(monthchoice):
     prefix = getattr(settings, 'CACHE_PREFIX', '')
     return f'{prefix}ma{monthchoice}'
         
-
+def last_month(redis):
+    now = datetime.datetime.now()
+    code = datetime.datetime(now.year - 1, 12, 1).strftime('%Y%m')
+    if now.month != 1:
+        code = datetime.datetime(now.year, now.month - 1, 1).strftime('%Y%m')
+    lastmonth_has_report = redis.get('{}_submissions'.format(month_prefix(code)))
+    if lastmonth_has_report:
+        return code
 
 def form(request):
     mgroups = settings.MICROAGGRESSION_GROUPS
@@ -28,12 +35,13 @@ def form(request):
         # 1. iterate on mgroups to process if they are present
         #    and hincr into month report
         cur = month_prefix(now.strftime('%Y%m'))
+        redis.incr(f'{cur}_submissions')
         group_report_key = f'{cur}_track'
         for mgroup in mgroups:
             name = mgroup['name']
             vals = request.POST.getlist(name)
             for val in vals:
-                redis.hincrby(f'{group_report_key}_{name}', val, 1)
+                redis.hincrby(f'{group_report_key}_{name}_values', val, 1)
                 # TODO: expire (maybe a couple months after deploy)
             if mgroup.get('other_textfield'):
                 other_val = request.POST.get(f'{name}_other')
@@ -43,11 +51,41 @@ def form(request):
         words = request.POST.get('words')
         if words:
             redis.lpush(f'{cur}_words', words)
-        # 3. check if last month record exists in cache
-        #    if so, check if last month record exists in db
-        #       if not, then save record to db
-        last = (now.replace(month=now.month -1)
-                if now.month != 1 else
-                now.replace(year=now.year - 1, month=12))
-        lastmonth = last.strftime('%Y%m')
+        return render(request, 'tracker/thanks.html', {'questions': mgroups })
     return render(request, 'tracker/form.html', {'questions': mgroups })
+
+
+def monthreport(request, yearmonth):
+    mgroups = settings.MICROAGGRESSION_GROUPS
+    minfilter = {g['name']:g['minimum'] for g in mgroups
+                 if g.get('minimum')}
+    redis = _redis_connection()
+
+    yearmonth_dt = datetime.datetime.strptime(yearmonth, '%Y%m')
+    now = datetime.datetime.now()
+    context = {
+        'last_month': last_month(redis),
+    }
+    if yearmonth_dt.year >= now.year and yearmonth_dt.month >= now.month:
+        context.update({'notready': True })
+    else:
+        cur = month_prefix(yearmonth)
+        words = [w.decode() for w in (redis.lrange(f'{cur}_words', 0, -1) or [])]
+        keys = redis.keys(f'{cur}_track*')
+        results = {}
+        for key in keys:
+            valother, name, *rest = reversed(key.decode().split('_'))
+            obj = results.setdefault(name, {})
+            obj[valother] = {a.decode():b.decode() for a,b in redis.hgetall(key).items()}
+            minimum = minfilter.get(name)
+            if minimum:
+                obj['minimum'] = minimum
+        # FUTURE?  should we defer to current mgroups or leave older report values alone?
+        # Pro: questions would be ordered reliably (could also alphabetize)
+        context.update({
+            'results': sorted(results.items()),
+            'count': int((redis.get(f'{cur}_submissions') or b'').decode() or 0),
+            'words': words,
+        })
+    return render(request, 'tracker/report.html', context)
+
