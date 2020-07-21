@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{%block title %}{%endblock%}</title>
+    {% block metahead %}{# For additional META tags #}
+    {% endblock %}
+    {% block css %}
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+        background-color: #f3f0f0;
+      }
+      h2 {
+        text-align: center;
+        margin: 0px;
+        padding: 16px;
+      }
+      .container {
+        margin: 20px;
+
+      }
+      .header {
+        margin: 0px;
+        background-color: #a37dc6;
+        border-bottom: 4px solid #00abff;
+        width: 100%;
+        height: 67px;
+      }
+      b {
+        text-transform: capitalize;
+      }
+    </style>
+    {% endblock %}
+  </head>
+  <body>
+    {% block bodyprefix %}
+    {% endblock %}
+    {% block header %}
+    <div class="header">
+      <h2>Microaggression Tracker</h2>
+    </div>
+    {% endblock %}
+    <div class="container">
+    {% block content %}
+    {% endblock %}
+    </div>
+  </body>
+</html>

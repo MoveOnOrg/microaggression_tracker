@@ -1,6 +1,21 @@
-<!DOCTYPE html>
-<html>
-  <body>
+{% extends "base/base.html" %}
+
+{% block content %}
+    <p>
+      This form is to anonymously record so-called "microaggressions" you've experienced or been present for.
+      Ibram X. Kendi, in <a href="https://www.ibramxkendi.com/how-to-be-an-antiracist-1">How to be an Antiracist</a>,
+      notes that "microaggressions" are simply abuse.  This form endorses that view and encourages
+      reporting to HR, management and/or any other official channels to have the abuse addressed.
+
+    <p>
+      The context where this form is intended to be useful is that reporting and processing is emotional and organizational work,
+      which someone may not choose to do, or they might have done without satisfying results.  If you were present,
+      but not the victim, we especially encourage you to do that emotional and organizational work.
+    <p>
+      This form will report microaggressions along several axes by-month, to preserve complete anonymity -- not
+      even the administrators can track reports.  The hope is to expose where abuse is occurring in
+      the organization, both to hold leadership accountable (tracked over time) and to give all of us some
+      lens on which spaces are not as safe as they should be.
     <form method="POST">
       <ul>
     {% for q in questions %}
@@ -40,5 +55,4 @@
       </p>
       <input type="submit" value="Report" />
     </form>
-  </body>
-</html>
+{% endblock %}

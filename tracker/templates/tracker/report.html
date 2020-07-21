@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-<html>
-  <body>
+{% extends "base/base.html" %}
+
+{% block content %}
     <h1></h1>
     {% if notready %}
     <p>Sorry, that month report isn't available (yet?)</p>
@@ -49,5 +49,4 @@
           {% endfor %}
         </ul>
       {% endif %}
-  </body>
-</html>
+{% endblock %}
