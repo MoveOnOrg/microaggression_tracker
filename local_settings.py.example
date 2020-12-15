@@ -1,0 +1,85 @@
+MICROAGGRESSION_GROUPS = [
+    {'name': 'medium',
+     'other_textfield': True,
+     'choices': [
+         'Zoom',
+         'Email',
+         'Slack',
+         'Social Media',
+         'In-person',
+     ]
+    },
+    {'name': 'context',
+     'choices': [
+         '1-1 interaction',
+         'Team context',
+         'Project/Cross-team context',
+         'Organization context',
+         'Non-work context',
+     ]
+    },
+    {'name': 'relation',
+     'checkboxes': True,
+     'minimum': 3,
+     'choices': [
+         'Full-time member (non-supervisor)',
+         'Manager/Supervisor',
+         'Senior leadership',
+         'Reports to me',
+         'Contractor',
+     ]
+    },
+    {'name': 'team',
+     'checkboxes': True,
+     'minimum': 3,
+     'choices': [
+         'Human Resources',
+         'Tech',
+         'Fundraising',
+         'Comms',
+         'Volunteer group',
+     ]
+    },
+    {'name': 'lens',
+     'checkboxes': True,
+     'other_textfield': True,
+     'choices': [
+         'Race',
+         'Gender',
+         'Sexual Orientation',
+         'Immigration',
+         'Islamophobia',
+         'Antisemitism',
+         'Age',
+         'Disability',
+         'Neurodivergence',
+         'Class',
+         'Education',
+     ]
+    },
+    {'name': 'reporter',
+     'choices': [
+         'The microaggression was directed at me',
+         'I witnessed a microaggression or was the microaggressor',
+     ]
+    },
+]
+
+CACHES = {
+    'default': {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        'KEY_PREFIX': "microaggression",
+    },
+    'redis': {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        'KEY_PREFIX': "microaggression",
+    }
+}
